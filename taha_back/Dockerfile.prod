@@ -82,7 +82,7 @@ RUN pip install --no-cache /wheels/*
 #    && apk add --virtual .rundeps $runDeps \
 #    && apk del .build-deps
 # copy entrypoint-prod.sh
-COPY ./entrypoint.prod.sh $APP_HOME
+#COPY ./entrypoint.prod.sh $APP_HOME
 
 # copy project
 COPY . $APP_HOME
@@ -94,4 +94,4 @@ RUN chown -R app:app $APP_HOME
 USER app
 
 # run entrypoint.prod.sh
-ENTRYPOINT ["/home/app/web/entrypoint.prod.sh"]
+#ENTRYPOINT ["/home/app/web/entrypoint.prod.sh"]
