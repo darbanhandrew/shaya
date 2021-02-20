@@ -42,6 +42,20 @@ class Profile(models.Model):
     status = models.CharField(max_length=2, choices=STATUSES, default="d")
 
     phone_number = models.CharField(max_length=20, blank=True, null=True)
+    sheba = models.CharField(max_length=20, blank=True, null=True)
+    full_name = models.CharField(max_length=20, blank=True, null=True)
+    bank_name = models.CharField(max_length=20, blank=True, null=True)
+    transaction_status = models.CharField(max_length=2, choices=STATUSES, default="d")
+
+    def save(self, *args, **kwargs):
+        if self.full_name and self.bank_name and self.sheba:
+            self.transaction_status = 'a'
+        else:
+            self.transaction_status = 'd'
+        super(Profile, self).save(*args, **kwargs)
+
+    def __str__(self):
+        return self.phone_number
 
 
 class OTP(models.Model):
@@ -67,6 +81,8 @@ def create_profile_otp(sender, instance, created, **kwargs):
     if created:
         otp_s = OTP.objects.create(profile=instance)
         otp_s.save()
+        wallet = Wallet.objects.create(related_profile=instance, amount=0)
+        wallet.save()
         instance.save()
 
 
@@ -146,7 +162,7 @@ class Product(BaseModel):
 class Wallet(models.Model):
     created_at = models.DateTimeField(auto_now_add=True, verbose_name='Created at')
     updated_at = models.DateTimeField(auto_now=True, verbose_name='Updated at')
-    related_affiliate = models.ForeignKey(Profile, on_delete=models.CASCADE)
+    related_profile = models.OneToOneField(Profile, on_delete=models.CASCADE)
     amount = models.IntegerField(blank=True, null=True, default=0)
 
 
@@ -154,14 +170,14 @@ class Receipt(models.Model):
     related_product = models.ForeignKey(Product, on_delete=models.CASCADE)
     total_amount = models.IntegerField(blank=True, null=True)
     affiliate_amount = models.IntegerField(blank=True, null=True)
-    related_affiliate = models.ForeignKey(Profile, on_delete=models.CASCADE)
+    related_profile = models.ForeignKey(Profile, on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True, verbose_name='Created at')
     updated_at = models.DateTimeField(auto_now=True, verbose_name='Updated at')
 
 
 class Transaction(models.Model):
     amount = models.IntegerField(blank=True, null=True)
-    related_affiliate = models.ForeignKey(Profile, on_delete=models.CASCADE)
+    related_profile = models.ForeignKey(Profile, on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True, verbose_name='Created at')
     updated_at = models.DateTimeField(auto_now=True, verbose_name='Updated at')
 
@@ -169,4 +185,4 @@ class Transaction(models.Model):
         ('a', 'Add'),
         ('m', 'Minus'),
     )
-    types = models.CharField(max_length=2, choices=Types)
+    types = models.CharField(max_length=2, choices=Types, default='m')

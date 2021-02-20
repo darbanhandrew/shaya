@@ -6,7 +6,7 @@ from graphene_django import DjangoObjectType
 from graphene_django.filter import DjangoFilterConnectionField
 from graphql_jwt.refresh_token.shortcuts import create_refresh_token
 from graphql_jwt.shortcuts import get_token
-
+from graphene_django_crud.types import DjangoGrapheneCRUD
 from tahaApp.models import *
 from tahaApp.wchelper import get_products
 
@@ -22,7 +22,7 @@ class UserType(DjangoObjectType):
 class ProfileNode(DjangoObjectType):
     class Meta:
         model = Profile
-        filter_fields = ['id']
+        filter_fields = ['id', 'phone_number']
         interfaces = (relay.Node,)
 
 
@@ -96,6 +96,7 @@ class CreateUser(graphene.Mutation):
         return CreateUser(user=user, profile=profile_obj, token=token, refresh_token=refresh_token)
 
 
+
 class ImageNode(DjangoObjectType):
     class Meta:
         model = Image
@@ -158,10 +159,38 @@ class CategoryNode(DjangoObjectType):
         interfaces = (relay.Node,)
 
 
+class ProfileMutation(DjangoGrapheneCRUD):
+    class Meta:
+        model = Profile
+        input_exclude_fields = ("user", "phone_number")
+
+
+# class TransactionMutation(graphene.Mutation):
+#     status = graphene.String()
+#     transaction = graphene.Field(TransactionNode)
+#     wallet = graphene.Field(WalletNode)
+#     message = graphene.String()
+#         class Arguments:
+#             amount =graphene.Int()
+#
+#         def mutate(self, info, amount):
+#             user = info.context.user
+#             profile = Profile.objects.get(user= user)
+#             wallet = Wallet.objects.get(related_profile=profile)
+#             if wallet.amount >= amount:
+#                 status = "success"
+#                 message = "در خواست شما برای بررسی ارسال شد."
+#             else:
+#                 status = "failed"
+#                 message = "درخواست شما با مشکل مواجه شد."
+
+
+
 class TahaMutation(graphene.ObjectType):
     create_user = CreateUser.Field()
     verify_user = VerifyUser.Field()
     request_otp = RequestOTP.Field()
+    profile_update = ProfileMutation.UpdateField()
 
 
 class TahaQuery(graphene.ObjectType):
