@@ -20,6 +20,13 @@ RUN apk update \
     && apk add postgresql \
     && apk add postgresql-dev \
     && apk add jpeg-dev zlib-dev libjpeg \
+    &&ENV PATH="/root/.cargo/bin:${PATH}" \
+
+    &&RUN curl https://static.rust-lang.org/rustup/dist/x86_64-unknown-linux-musl/rustup-init --output /tmp/rustup-init \
+    && chmod +x /tmp/rustup-init \
+    && /tmp/rustup-init -y \
+    && pip install --no-cache-dir cryptography \
+    && rustup self uninstall -y
     && pip wheel --no-cache-dir --no-deps --wheel-dir /usr/src/app/wheels -r requirements.txt \
     && find /usr/local \
         \( -type d -a -name test -o -name tests \) \
@@ -68,7 +75,11 @@ RUN apk update \
     && pip install psycopg2 \
     && apk add jpeg-dev zlib-dev libjpeg \
     && pip install Pillow \
-    && pip install cryptography \
+    &&ENV PATH="/root/.cargo/bin:${PATH}" \
+    &&RUN curl https://static.rust-lang.org/rustup/dist/x86_64-unknown-linux-musl/rustup-init --output /tmp/rustup-init \
+    && chmod +x /tmp/rustup-init \
+    && /tmp/rustup-init -y \
+    && pip install --no-cache-dir cryptography \
     && find /usr/local \
         \( -type d -a -name test -o -name tests \) \
         -o \( -type f -a -name '*.pyc' -o -name '*.pyo' \) \
