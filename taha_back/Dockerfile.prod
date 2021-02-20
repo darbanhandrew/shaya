@@ -62,7 +62,7 @@ COPY --from=builder /usr/src/app/requirements.txt .
 RUN pip install --upgrade pip
 RUN pip install --no-cache /wheels/*
 RUN apk update \
-    && apk add --virtual .build-deps gcc libffi-dev openssl-dev cargo python3-dev musl-dev \
+    && apk add --virtual .build-deps gcc libressl-dev libffi-dev openssl-dev cargo python3-dev musl-dev \
     && apk add postgresql \
     && apk add postgresql-dev \
     && pip install psycopg2 \
