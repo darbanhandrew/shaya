@@ -76,11 +76,6 @@ RUN apk update \
     )" \
     && apk add --virtual .rundeps $runDeps \
     && apk del .build-deps
-RUN pip install --upgrade pip
-RUN apk update \
-    && apk add --virtual build-deps gcc python3-dev musl-dev \
-    && pip install Twisted \
-    && apk del build-deps
 # copy entrypoint-prod.sh
 #COPY ./entrypoint.prod.sh $APP_HOME
 
