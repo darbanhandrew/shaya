@@ -17,10 +17,10 @@ COPY . .
 COPY ./requirements.txt .
 RUN apk update \
     && apk add --virtual .build-deps gcc rust cargo libffi-dev openssl-dev libressl-dev \
-    && apk add python3-dev musl-dev py3-twisted\
-    && apk add postgresql \
-    && apk add postgresql-dev \
-    && apk add jpeg-dev zlib-dev libjpeg \
+    && python3-dev musl-dev\
+    && postgresql \
+    && postgresql-dev \
+    && jpeg-dev zlib-dev libjpeg \
     && pip wheel --no-cache-dir --no-deps --wheel-dir /usr/src/app/wheels -r requirements.txt \
     && find /usr/local \
         \( -type d -a -name test -o -name tests \) \
@@ -35,6 +35,7 @@ RUN apk update \
     )" \
     && apk add --virtual .rundeps $runDeps \
     && apk del .build-deps
+
 #########
 # FINAL #
 #########
@@ -64,10 +65,10 @@ RUN pip install --upgrade pip
 RUN pip install --no-cache /wheels/*
 RUN apk update \
     && apk add --virtual .build-deps gcc python3-dev musl-dev \
-    && apk add postgresql \
-    && apk add postgresql-dev \
+    && postgresql \
+    && postgresql-dev \
+    && jpeg-dev zlib-dev libjpeg \
     && pip install psycopg2 \
-    && apk add jpeg-dev zlib-dev libjpeg \
     && pip install Pillow \
     && find /usr/local \
         \( -type d -a -name test -o -name tests \) \
@@ -82,7 +83,11 @@ RUN apk update \
     )" \
     && apk add --virtual .rundeps $runDeps \
     && apk del .build-deps
-RUN apk add py3-twisted
+RUN pip install --upgrade pip
+RUN apk update \
+    && apk add --virtual build-deps gcc python3-dev musl-dev \
+    && pip install Twisted \
+    && apk del build-deps
 # copy entrypoint-prod.sh
 #COPY ./entrypoint.prod.sh $APP_HOME
 
