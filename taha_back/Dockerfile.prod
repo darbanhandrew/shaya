@@ -16,11 +16,7 @@ COPY . .
 
 COPY ./requirements.txt .
 RUN apk update \
-    && apk add --virtual .build-deps gcc rust cargo libffi-dev openssl-dev libressl-dev \
-    && python3-dev musl-dev\
-    && postgresql \
-    && postgresql-dev \
-    && jpeg-dev zlib-dev libjpeg \
+    && apk add --virtual .build-deps gcc rust cargo libffi-dev openssl-dev libressl-dev python3-dev musl-dev postgresql postgresql-dev jpeg-dev zlib-dev libjpeg\
     && pip wheel --no-cache-dir --no-deps --wheel-dir /usr/src/app/wheels -r requirements.txt \
     && find /usr/local \
         \( -type d -a -name test -o -name tests \) \
@@ -64,10 +60,7 @@ COPY --from=builder /usr/src/app/requirements.txt .
 RUN pip install --upgrade pip
 RUN pip install --no-cache /wheels/*
 RUN apk update \
-    && apk add --virtual .build-deps gcc python3-dev musl-dev \
-    && postgresql \
-    && postgresql-dev \
-    && jpeg-dev zlib-dev libjpeg \
+    && apk add --virtual .build-deps gcc python3-dev musl-dev postgresql postgresql-dev jpeg-dev zlib-dev libjpeg\
     && pip install psycopg2 \
     && pip install Pillow \
     && find /usr/local \
