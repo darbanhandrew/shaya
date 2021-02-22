@@ -25,6 +25,6 @@ from django.conf.urls.static import static
 urlpatterns = [
                   path('admin/', admin.site.urls),
                   path('jet/', include('jet.urls', 'jet')),
-                  path('jet/', include('jet.dashboard.urls', 'jet-dashboard')),
+                  path('jet/dashboard/', include('jet.dashboard.urls', 'jet-dashboard')),
                   path('graphql', csrf_exempt(GraphQLView.as_view(graphiql=True))),
               ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
