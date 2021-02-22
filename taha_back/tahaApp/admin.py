@@ -16,6 +16,8 @@ models = apps.get_models()
 for model in models:
     if model == RefreshToken:
         continue
+    if model == Category:
+        continue
     try:
         admin.site.register(model)
     except admin.sites.AlreadyRegistered:

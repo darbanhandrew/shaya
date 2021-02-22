@@ -12,7 +12,12 @@ ENV PYTHONUNBUFFERED 1
 RUN pip install --upgrade pip
 COPY ./requirements.txt .
 RUN apk update \
-    && apk add --virtual build-deps gcc rust cargo libffi-dev openssl-dev libressl-dev python3-dev musl-dev postgresql postgresql-dev jpeg-dev zlib-dev libjpeg \
+    && apk add --virtual build-deps gcc rust cargo libffi-dev openssl-dev libressl-dev python3-dev musl-dev \
+    && apk add postgresql \
+    && apk add postgresql-dev \
+    && pip install psycopg2 \
+    && apk add jpeg-dev zlib-dev libjpeg \
+    && pip install Pillow \
     && pip install -r requirements.txt \
     && apk del build-deps
 

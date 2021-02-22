@@ -96,7 +96,6 @@ class CreateUser(graphene.Mutation):
         return CreateUser(user=user, profile=profile_obj, token=token, refresh_token=refresh_token)
 
 
-
 class ImageNode(DjangoObjectType):
     class Meta:
         model = Image
@@ -165,25 +164,30 @@ class ProfileMutation(DjangoGrapheneCRUD):
         input_exclude_fields = ("user", "phone_number")
 
 
-# class TransactionMutation(graphene.Mutation):
-#     status = graphene.String()
-#     transaction = graphene.Field(TransactionNode)
-#     wallet = graphene.Field(WalletNode)
-#     message = graphene.String()
-#         class Arguments:
-#             amount =graphene.Int()
-#
-#         def mutate(self, info, amount):
-#             user = info.context.user
-#             profile = Profile.objects.get(user= user)
-#             wallet = Wallet.objects.get(related_profile=profile)
-#             if wallet.amount >= amount:
-#                 status = "success"
-#                 message = "در خواست شما برای بررسی ارسال شد."
-#             else:
-#                 status = "failed"
-#                 message = "درخواست شما با مشکل مواجه شد."
+class TransactionMutation(graphene.Mutation):
+    status = graphene.String()
+    transaction = graphene.Field(TransactionNode)
+    wallet = graphene.Field(WalletNode)
+    message = graphene.String()
 
+    class Arguments:
+        amount = graphene.Int()
+
+    def mutate(self, info, amount):
+        user = info.context.user
+        profile = Profile.objects.get(user=user)
+        wallet = Wallet.objects.get(related_profile=profile)
+        transaction = None
+        if wallet.amount >= amount:
+            status = "success"
+            message = "در خواست شما برای بررسی ارسال شد."
+            transaction = Transaction(amount=amount, related_profile=profile)
+            transaction.save()
+        else:
+            status = "failed"
+            message = "درخواست شما با مشکل مواجه شد."
+        wallet = Wallet.objects.get(related_profile=profile)
+        return TransactionMutation(status=status, transaction=transaction, wallet=wallet, message=message)
 
 
 class TahaMutation(graphene.ObjectType):
@@ -191,6 +195,7 @@ class TahaMutation(graphene.ObjectType):
     verify_user = VerifyUser.Field()
     request_otp = RequestOTP.Field()
     profile_update = ProfileMutation.UpdateField()
+    create_transaction = TransactionMutation.Field()
 
 
 class TahaQuery(graphene.ObjectType):

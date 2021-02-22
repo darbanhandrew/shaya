@@ -26,10 +26,11 @@ active_roles = (
 )
 
 
-def random_with_N_digits(n):
+def random_with_N_digits():
+    n = 5
     range_start = 10 ** (n - 1)
     range_end = (10 ** n) - 1
-    return randint(range_start, range_end)
+    return str(randint(range_start, range_end))
 
 
 class Profile(models.Model):
@@ -59,7 +60,7 @@ class Profile(models.Model):
 
 
 class OTP(models.Model):
-    message = models.CharField(max_length=7, default=str(random_with_N_digits(5)))
+    message = models.CharField(max_length=7, default=random_with_N_digits, blank=True, null=True)
     VALID = (
         ('valid', 'Valid'),
         ('invalid', 'Invalid'),
@@ -165,6 +166,9 @@ class Wallet(models.Model):
     related_profile = models.OneToOneField(Profile, on_delete=models.CASCADE)
     amount = models.IntegerField(blank=True, null=True, default=0)
 
+    def __str__(self):
+        return self.related_profile.phone_number
+
 
 class Receipt(models.Model):
     related_product = models.ForeignKey(Product, on_delete=models.CASCADE)
@@ -173,6 +177,15 @@ class Receipt(models.Model):
     related_profile = models.ForeignKey(Profile, on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True, verbose_name='Created at')
     updated_at = models.DateTimeField(auto_now=True, verbose_name='Updated at')
+
+    def save(self, *args, **kwargs):
+        profile = self.related_profile
+        wallet = profile.wallet
+        commission = self.related_product.related_shop.commission
+        self.affiliate_amount = self.total_amount * commission
+        if not self.id:
+            wallet.amount = wallet.amount + self.affiliate_amount
+        super(Receipt, self).save(*args, **kwargs)
 
 
 class Transaction(models.Model):
@@ -186,3 +199,29 @@ class Transaction(models.Model):
         ('m', 'Minus'),
     )
     types = models.CharField(max_length=2, choices=Types, default='m')
+    TRANSACTION_STATUS = (
+        ('paid', 'Paid'),
+        ('requested', 'Requested'),
+        ('cancelled', 'Cancelled')
+    )
+    status = models.CharField(max_length=15, choices=TRANSACTION_STATUS, default='requested')
+    __original_status = None
+
+    def __init__(self, *args, **kwargs):
+        super(Transaction, self).__init__(*args, **kwargs)
+        self.__original_status = self.status
+
+    def save(self, *args, **kwargs):
+        profile = self.related_profile
+        wallet = profile.wallet
+        if not self.id:
+            wallet.amount = wallet.amount - self.amount
+            wallet.save()
+        else:
+            if self.status == 'cancelled' and self.__original_status != 'cancelled':
+                wallet.amount = wallet.amount + self.amount
+                wallet.save()
+            elif self.status != self.__original_status and self.__original_status == 'cancelled':
+                wallet.amount = wallet.amount - self.amount
+                wallet.save()
+        super(Transaction, self).save(*args, **kwargs)
