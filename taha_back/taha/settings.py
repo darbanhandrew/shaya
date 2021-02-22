@@ -35,8 +35,8 @@ ALLOWED_HOSTS = os.environ.get("DJANGO_ALLOWED_HOSTS",default="localhost 127.0.0
 # Application definition
 
 INSTALLED_APPS = [
-    # 'jet.dashboard',
-    # 'jet',
+    'jet.dashboard',
+    'jet',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -184,5 +184,5 @@ JET_THEMES = [
         'title': 'Light Gray'
     }
 ]
-JET_CHANGE_FORM_SIBLING_LINKS = True
+JET_CHANGE_FORM_SIBLING_LINKS = False
 JET_SIDE_MENU_COMPACT = False
