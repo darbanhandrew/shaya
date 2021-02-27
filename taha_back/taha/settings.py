@@ -25,12 +25,12 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # SECURITY WARNING: don't run with debug turned on in production!
 SECRET_KEY = os.environ.get("SECRET_KEY", default='1wz+re7hpub0=m1lg55--q6nz0#$zulzb5q@d(q8rf$_-g^lcl')
 
-DEBUG = int(os.environ.get("DEBUG", default=1))
-
+# DEBUG = int(os.environ.get("DEBUG", default=True))
+DEBUG = True
 # 'DJANGO_ALLOWED_HOSTS' should be a single string of hosts with a space between each.
 # For example: 'DJANGO_ALLOWED_HOSTS=localhost 127.0.0.1 [::1]'
-ALLOWED_HOSTS = os.environ.get("DJANGO_ALLOWED_HOSTS",default="localhost 127.0.0.1 [::1]").split(" ")
-#ALLOWED_HOSTS = []
+ALLOWED_HOSTS = os.environ.get("DJANGO_ALLOWED_HOSTS", default="localhost 127.0.0.1 [::1]").split(" ")
+# ALLOWED_HOSTS = []
 
 # Application definition
 
@@ -129,7 +129,7 @@ USE_TZ = True
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.1/howto/static-files/
-# STATICFILES_DIRS=[os.path.join(BASE_DIR, "statics")]
+STATICFILES_DIRS = [os.path.join(BASE_DIR, "static")]
 STATIC_URL = "/staticfiles/"
 STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
 MEDIA_URL = "/mediafiles/"
