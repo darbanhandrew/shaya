@@ -1,5 +1,3 @@
-from shlex import join
-
 from woocommerce import API
 
 from tahaApp.models import Product, Shop
@@ -14,7 +12,7 @@ def get_products(shop: Shop):
     )
     fields = ["id", "name", "images", "description", "categories", "permalink",
               "date_created_gmt", "date_modified_gmt"]
-    r = wcapi.get("products", params={"fields": {{fields | join: ","}}, "per_page": "1"})
+    r = wcapi.get("products", params={"fields": {{fields: ","}}, "per_page": "1"})
 
     # products = r.json()
     # for product in products:

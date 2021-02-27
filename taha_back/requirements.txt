@@ -11,7 +11,7 @@ constantly==15.1.0
 cryptography==3.4.6
 daphne==2.5.0
 Django==3.1.6
-django-3-jet==1.0.8
+django-adminlte3==0.1.6
 django-cors-headers==3.7.0
 django-filter==2.4.0
 django-graphql-jwt==0.3.1
