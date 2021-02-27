@@ -7,7 +7,7 @@ services:
       dockerfile: Dockerfile.semi.prod
     command: gunicorn taha.wsgi:application --bind 0.0.0.0:8000
     volumes:
-      - static_volume:/home/app/web/staticfiles
+      - static_volume:/home/app/web/static
       - media_volume:/home/app/web/mediafiles
     expose:
       - 8000
@@ -24,7 +24,7 @@ services:
   nginx:
     build: ./nginx
     volumes:
-      - static_volume:/home/app/web/staticfiles
+      - static_volume:/home/app/web/static
       - media_volume:/home/app/web/mediafiles
     ports:
       - 80:80
